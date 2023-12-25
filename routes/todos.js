@@ -1,8 +1,9 @@
 var express = require("express");
 var router = express.Router();
 const models = require("../models");
+const { tokenValid } = require("../helpers/utils");
 
-router.get("/", async function (req, res, next) {
+router.get("/", tokenValid, async function (req, res, next) {
   try {
     const todos = await models.Todo.findAll({include: models.User });
     res.json(todos);
@@ -12,13 +13,13 @@ router.get("/", async function (req, res, next) {
   }
 });
 
-router.post("/", async function (req, res, next) {
+router.post("/",tokenValid, async function (req, res, next) {
   try {
-    const { title, executor } = req.body;
+    const { title} = req.body;
     console.log(req.body);
     const todo = await models.Todo.create({
       title,
-      executor,
+      executor: req.user.userid
     });
     res.json(todo);
   } catch (err) {
@@ -27,7 +28,7 @@ router.post("/", async function (req, res, next) {
   }
 });
 
-router.put("/:id", async function (req, res, next) {
+router.put("/:id",tokenValid, async function (req, res, next) {
   try {
     const { title, complete } = req.body;
     const todo = await models.Todo.update(
@@ -46,7 +47,7 @@ router.put("/:id", async function (req, res, next) {
   }
 });
 
-router.delete("/:id", async function (req, res, next) {
+router.delete("/:id",tokenValid, async function (req, res, next) {
   try {
     const { name } = req.body;
     const todo = await models.Todo.destroy({

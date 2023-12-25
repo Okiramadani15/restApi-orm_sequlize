@@ -15,10 +15,11 @@ router.get('/', async function(req, res, next) {
 
 router.post('/', async function(req, res, next){
   try{
-    const {name} = req.body
-    console.log(req.body)
+    const {email,password, name} = req.body
     const user = await models.User.create({
-       name
+      email,
+      password,
+      name
   });
     res.json(user)
   }catch(err){
